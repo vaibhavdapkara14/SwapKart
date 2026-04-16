@@ -203,8 +203,8 @@
                     <!-- Image -->
                     <div class="img-wrapper">
                         <span class="badge-status">${p.category}</span>
-                        <img src="${pageContext.request.contextPath}/assets/img/${p.image}" 
-                             onerror="this.src='https://placehold.co/400x300?text=SwapKart+Item'">
+                       <!-- Direct URL logic -->
+<img src="${p.image}" onerror="this.src='https://placehold.co/400x300?text=No+Image'">
                     </div>
 
                     <!-- Content -->

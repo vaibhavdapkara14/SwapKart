@@ -192,8 +192,8 @@
 
         <!-- 1. Product Image Section -->
         <div class="img-section">
-            <img src="${pageContext.request.contextPath}/assets/img/${p.image}" 
-                 onerror="this.src='https://placehold.co/600x600?text=Product+Image'"
+<!-- Direct URL logic -->
+           <img src="${p.image}" onerror="this.src='https://placehold.co/400x300?text=No+Image'"
                  class="product-img">
             
             <div class="description-box mt-4">
