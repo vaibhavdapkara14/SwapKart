@@ -26,7 +26,7 @@
                     <div class="row align-items-center">
                         <!-- Product Image -->
                         <div class="col-md-2 text-center mb-3 mb-md-0">
-                        <img src="${p.image}" onerror="this.src='https://placehold.co/400x300?text=No+Image'"
+                        <img src="${o.productImage}" onerror="this.src='https://placehold.co/400x300?text=No+Image'"
                                  class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
                         </div>
 
