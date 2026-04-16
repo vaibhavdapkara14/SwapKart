@@ -9,7 +9,7 @@
     <c:forEach var="item" items="${cartList}">
         <div class="sk-card p-3 mb-3 d-flex align-items-center justify-content-between shadow-sm">
             <div class="d-flex align-items-center">
-                <img src="${pageContext.request.contextPath}/assets/img/${item.product.image}" width="70" class="rounded me-3">
+      <img src="${p.image}" onerror="this.src='https://placehold.co/400x300?text=No+Image'" width="70" class="rounded me-3">
                 <div>
                     <h6 class="mb-0 fw-bold">${item.product.title}</h6>
                     <span class="text-success fw-bold">₹ ${item.product.price}</span>
