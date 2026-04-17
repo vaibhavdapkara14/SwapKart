@@ -114,7 +114,8 @@
                     <tbody>
                         <c:forEach var="p" items="${allProducts}">
                             <tr>
-                                <td><img src="${p.image}" onerror="this.src='https://placehold.co/400x300?text=No+Image'" width="40" class="rounded"></td>
+                               
+                                <td>  <img src="${p.image}" onerror="this.src='https://placehold.co/40x40?text=Item'" width="40" height="40" class="rounded me-2"></td>
                                 <td class="fw-bold">${p.title}</td>
                                 <td class="text-success fw-bold">₹ ${p.price}</td>
                                 <td>${p.sellerName}</td>

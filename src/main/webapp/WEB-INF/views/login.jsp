@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11440/11440263.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11440/11440263.png">
     <title>Login | SwapKart</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -33,7 +33,6 @@
             color: #f8fafc;
         }
 
-   
         .navbar-custom {
             background: rgba(15, 23, 42, 0.9) !important;
             backdrop-filter: blur(12px);
@@ -65,7 +64,6 @@
             transform: translateY(-2px);
         }
 
-      
         .login-container {
             flex: 1;
             display: flex;
@@ -101,7 +99,6 @@
             font-size: 14px;
         }
 
-        
         .input-group {
             background: #f1f5f9;
             border-radius: 14px;
@@ -134,7 +131,6 @@
 
         .form-control::placeholder { color: #94a3b8; }
 
-        /* Error/Msg Alert */
         .alert-custom {
             background: #fee2e2;
             color: #b91c1c;
@@ -146,7 +142,6 @@
             text-align: center;
         }
 
-        /* Buttons */
         .btn-login {
             background: linear-gradient(135deg, #6366f1, #a855f7);
             color: white;
@@ -194,7 +189,6 @@
     </style>
 </head>
 
-<!-- Is body tag ko har file mein update karo -->
 <body class="${sessionScope.theme == 'dark' ? 'dark-theme' : ''}">
 
 <nav class="navbar navbar-expand-lg navbar-custom sticky-top animate__animated animate__fadeInDown">
@@ -219,26 +213,29 @@
             <div class="login-subtitle">Please enter your details to sign in.</div>
         </div>
 
+        <!-- CLIENT-SIDE JAVASCRIPT ERROR BOX (NAYA ADD KIYA HAI) -->
+        <div id="jsError" class="alert alert-custom d-none animate__animated animate__shakeX mb-3"></div>
+
         <c:if test="${not empty sessionScope.msg}">
-            <div class="alert alert-custom animate__animated animate__shakeX">
+            <div class="alert alert-custom animate__animated animate__shakeX mb-3">
                 <i class="fa-solid fa-circle-exclamation me-1"></i> ${sessionScope.msg}
             </div>
             <c:remove var="msg" scope="session"/>
         </c:if>
 
-        <form method="post" action="${pageContext.request.contextPath}/doLogin">
+        <form id="loginForm" method="post" action="${pageContext.request.contextPath}/doLogin">
             
             <div class="input-group">
                 <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
-                <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+                <input type="email" name="email" class="form-control" placeholder="Email Address" id="emailField">
             </div>
 
             <div class="input-group">
                 <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                <input type="password" name="password" class="form-control" placeholder="Password" required>
+                <input type="password" name="password" class="form-control" placeholder="Password" id="passField">
             </div>
 
-            <a href="#" class="forgot-pass text-decoration-none">Forgot Password?</a>
+            <a href="${pageContext.request.contextPath}/forgotPassword" class="forgot-pass text-decoration-none">Forgot Password?</a>
 
             <button type="submit" class="btn btn-login">
                 Sign In <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
@@ -252,5 +249,48 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // VALIDATION LOGIC START
+    document.getElementById("loginForm").onsubmit = function(event) {
+        const email = document.getElementById("emailField").value.trim();
+        const password = document.getElementById("passField").value.trim();
+        const jsError = document.getElementById("jsError");
+
+        // Simple function to show error without breaking UI
+        function showError(msg) {
+            jsError.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i> ' + msg;
+            jsError.classList.remove("d-none");
+            event.preventDefault(); // Stop form submission
+        }
+
+        // Email check
+        if (email === "") {
+            showError("Enter Email..");
+            return false;
+        }
+
+        // Email format regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showError("Enter Correct Email Address.");
+            return false;
+        }
+
+        // Password check
+        if (password === "") {
+            showError("Enter Password... ");
+            return false;
+        }
+
+        if (password.length < 3) {
+            showError("Enter password more than 4 digit");
+            return false;
+        }
+
+        return true; // Sab sahi hai
+    };
+</script>
+
 </body>
 </html>

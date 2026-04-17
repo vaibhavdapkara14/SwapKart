@@ -33,26 +33,26 @@ public class AdminController {
 
         // 3. INVENTORY LIST (All Products)
         m.addAttribute("allProducts", productDao.getAllProductsAdmin());
-        
-        // 4. ORDERS LIST (With Joined Data)
-        String sql = "SELECT o.id, u.fullName, p.title, o.amount, o.status, o.shippingAddress, o.city " +
-                     "FROM orders o JOIN users u ON o.user_id = u.id JOIN products p ON o.product_id = p.id";
-        
-        List<Order> orders = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Order o = new Order();
-            o.setId(rs.getInt("id"));
-            o.setShippingName(rs.getString("fullName")); 
-            o.setProductTitle(rs.getString("title"));     
-            o.setAmount(rs.getDouble("amount"));
-            o.setStatus(rs.getString("status"));
-            o.setShippingAddress(rs.getString("shippingAddress"));
-            o.setCity(rs.getString("city"));
-            return o;
-        });
-        m.addAttribute("allOrders", orders);
-
-        return "admin-dashboard";
-    }
+        String sql = "SELECT o.id, u.fullName, p.title as productTitle, p.image as productImage, " +
+                "o.amount, o.status, o.shippingAddress, o.city " +
+                "FROM orders o JOIN users u ON o.user_id = u.id JOIN products p ON o.product_id = p.id";
+   
+   List<Order> orders = jdbcTemplate.query(sql, (rs, rowNum) -> {
+       Order o = new Order();
+       o.setId(rs.getInt("id"));
+       o.setShippingName(rs.getString("fullName")); 
+       o.setProductTitle(rs.getString("productTitle"));     
+       o.setProductImage(rs.getString("productImage")); 
+       o.setAmount(rs.getDouble("amount"));
+       o.setStatus(rs.getString("status"));
+       o.setShippingAddress(rs.getString("shippingAddress"));
+       o.setCity(rs.getString("city"));
+       return o;
+   }); // <-- Yeh parenthesis aur semicolon dhyan se check karo
+   
+   m.addAttribute("allOrders", orders); // Ab yahan red line nahi aayegi
+   return "admin-dashboard";
+}
 
     @GetMapping("/updateOrderStatus")
     public String updateStatus(@RequestParam("id") int id, @RequestParam("status") String status) {

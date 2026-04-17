@@ -140,9 +140,10 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Order> getOrdersByUserId(int userId) {
+        // Is SQL query mein 'p.image' fetch karna zaroori hai
         String sql = "SELECT o.*, p.title as productTitle, p.image as productImage FROM orders o " +
                      "JOIN products p ON o.product_id = p.id WHERE o.user_id = ? ORDER BY o.id DESC";
-        
+
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Order o = new Order();
             o.setId(rs.getInt("id"));
@@ -151,16 +152,14 @@ public class ProductDaoImpl implements ProductDao {
             o.setTransactionId(rs.getString("transaction_id"));
             o.setOrderDate(rs.getTimestamp("order_date"));
             o.setDeliveryOtp(rs.getString("delivery_otp"));
-            // Shipping Mapping
             o.setShippingName(rs.getString("shippingName"));
             o.setShippingMobile(rs.getString("shippingMobile"));
             o.setShippingAddress(rs.getString("shippingAddress"));
             o.setCity(rs.getString("city"));
             o.setState(rs.getString("state"));
             o.setPincode(rs.getString("pincode"));
-            // Join Data
             o.setProductTitle(rs.getString("productTitle"));
-            o.setProductImage(rs.getString("productImage"));
+            o.setProductImage(rs.getString("productImage")); // <--- SPECIFIC FIX: Orders tab ki photo yahan se aayegi
             return o;
         }, userId);
     }
@@ -208,7 +207,9 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public List<Product> getAllProductsAdmin() {
-        return getAllProducts();
+        // Check karo 'image' column dhang se fetch ho raha hai
+        String sql = "SELECT * FROM products ORDER BY id DESC";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Product.class));
     }
 
     @Override
