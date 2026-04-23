@@ -1,61 +1,108 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<html>
-<head>
+<jsp:include page="header.jsp" />
 
-<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11440/11440263.png">
-    <title>My Wishlist - SwapKart</title>
-    <style>
-        .wishlist-container { width: 80%; margin: 30px auto; }
-        .wishlist-item { 
-            display: flex; 
-            align-items: center; 
-            border: 1px solid #ddd; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            border-radius: 8px;
-            background: #fff;
-        }
-        .wishlist-item img { width: 120px; height: 100px; object-fit: cover; border-radius: 5px; margin-right: 20px; }
-        .item-details { flex-grow: 1; }
-        .item-details h3 { margin: 0 0 5px 0; color: #333; }
-        .price { color: green; font-weight: bold; font-size: 18px; }
-        .remove-btn { color: #ff4444; text-decoration: none; font-weight: bold; border: 1px solid #ff4444; padding: 5px 10px; border-radius: 4px; }
-        .remove-btn:hover { background: #ff4444; color: white; }
-        .view-btn { background: #007bff; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; margin-right: 10px; }
-    </style>
-</head>
-<body style="background: #f8f9fa;">
-<jsp:include page="header.jsp"/>
+<!-- 1. Mobile Meta Tag -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div class="wishlist-container">
-    <h2> My Saved Items</h2>
-    <hr>
+<body class="${sessionScope.theme == 'dark' ? 'dark-theme' : ''}">
+<div class="container py-4 py-md-5">
+    
+    <div class="row mb-4 animate__animated animate__fadeInDown">
+        <div class="col-12">
+            <h2 class="fw-800"><i class="fa-solid fa-heart text-danger me-2"></i> My Wishlist</h2>
+            <p class="text-muted small">Items you've saved to buy later.</p>
+        </div>
+    </div>
 
+    <!-- Empty Wishlist Section -->
     <c:if test="${empty list}">
-        <div style="text-align: center; margin-top: 50px;">
-            <p style="font-size: 18px; color: gray;">Your wishlist is empty.</p>
-            <a href="${pageContext.request.contextPath}/products" style="color: #007bff;">Browse Products</a>
+        <div class="sk-card p-5 text-center shadow-sm border-0 animate__animated animate__zoomIn">
+            <i class="fa-regular fa-heart fa-4x text-muted mb-3 opacity-25"></i>
+            <h4 class="text-muted">Your wishlist is Empty !</h4>
+            <p class="small text-muted mb-4">Marketplace explore karo aur pasandida cheezein yahan save karo.</p>
+            <a href="${pageContext.request.contextPath}/products" class="btn btn-primary rounded-pill px-5 fw-bold shadow">
+                Explore Market
+            </a>
         </div>
     </c:if>
 
-    <c:forEach var="p" items="${list}">
-        <div class="wishlist-item">
-            <img src="${pageContext.request.contextPath}/assets/img/${p.image}" alt="Product">
-            
-            <div class="item-details">
-                <h3>${p.title}</h3>
-                <p style="color: gray; font-size: 14px; margin: 5px 0;">Category: ${p.category}</p>
-                <div class="price">₹ ${p.price}</div>
-            </div>
+    <div class="row g-3">
+        <c:forEach var="p" items="${list}">
+            <div class="col-12">
+                <!-- wishlist-item responsive logic -->
+                <div class="sk-card p-3 p-md-4 shadow-sm border-0 animate__animated animate__fadeInUp">
+                    <div class="row align-items-center">
+                        
+                        <!-- 1. Product Image (Responsive) -->
+                        <div class="col-12 col-md-2 text-center mb-3 mb-md-0">
+                            <!-- CLOUDINARY FIX: Direct URL used here -->
+                            <img src="${p.image}" 
+                                 onerror="this.src='https://placehold.co/400x300?text=SwapKart'"
+                                 class="rounded-4 border shadow-sm" 
+                                 style="width: 100px; height: 100px; object-fit: cover;">
+                        </div>
 
-            <div>
-                <a href="${pageContext.request.contextPath}/product/details?id=${p.id}" class="view-btn">View</a>
-                <a href="${pageContext.request.contextPath}/removeFromWishlist?id=${p.id}" class="remove-btn" onclick="return confirm('Remove from wishlist?')">Remove</a>
+                        <!-- 2. Product Details -->
+                        <div class="col-12 col-md-6 text-center text-md-start">
+                            <h5 class="fw-bold mb-1 text-main">${p.title}</h5>
+                            <span class="badge bg-light text-dark border mb-2" style="font-size: 10px;">${p.category}</span>
+                            <h4 class="text-success fw-800 mb-0">₹ ${p.price}</h4>
+                        </div>
+
+                        <!-- 3. Actions Button (Responsive stack) -->
+                        <div class="col-12 col-md-4 mt-3 mt-md-0">
+                            <div class="d-flex flex-column flex-sm-row gap-2 justify-content-md-end">
+                                <a href="${pageContext.request.contextPath}/product/details?id=${p.id}" 
+                                   class="btn btn-primary rounded-pill fw-bold px-4">
+                                    <i class="fa-solid fa-eye me-1"></i> View
+                                </a>
+                                <a href="${pageContext.request.contextPath}/removeFromWishlist?id=${p.id}" 
+                                   class="btn btn-outline-danger rounded-pill fw-bold px-4" 
+                                   onclick="return confirm('Are you sure?')">
+                                    <i class="fa-solid fa-trash-can me-1"></i> Remove
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-        </div>
-    </c:forEach>
+        </c:forEach>
+    </div>
 </div>
 
+<style>
+    .fw-800 { font-weight: 800; }
+    
+    /* Input/Button sizing for better touch targets on mobile */
+    .btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    /* Transition effect for the card */
+    .sk-card {
+        transition: transform 0.3s ease;
+    }
+    .sk-card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Mobile view specific adjustments */
+    @media (max-width: 767px) {
+        .container { padding-left: 15px; padding-right: 15px; }
+        .sk-card { text-align: center; border-radius: 20px !important; }
+        .btn { width: 100%; } /* Mobile par buttons full width */
+        img { width: 120px !important; height: 120px !important; }
+    }
+
+    /* Dark Mode specific background override for light boxes */
+    .dark-theme .bg-light { 
+        background: rgba(255, 255, 255, 0.05) !important; 
+        color: white !important; 
+        border: 1px solid rgba(255,255,255,0.1) !important; 
+    }
+</style>
 </body>
 </html>

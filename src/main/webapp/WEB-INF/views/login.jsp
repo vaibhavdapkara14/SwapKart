@@ -6,7 +6,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11440/11440263.png">
     <title>Login | SwapKart</title>
     
@@ -20,6 +19,7 @@
             --primary: #6366f1;
             --secondary: #a855f7;
             --glass: rgba(255, 255, 255, 0.95);
+            --error: #ef4444;
         }
 
         body {
@@ -31,6 +31,7 @@
             display: flex;
             flex-direction: column;
             color: #f8fafc;
+            overflow-x: hidden;
         }
 
         .navbar-custom {
@@ -99,12 +100,19 @@
             font-size: 14px;
         }
 
+        /* Input Styling with Validation support */
         .input-group {
             background: #f1f5f9;
             border-radius: 14px;
-            border: 1px solid #e2e8f0;
+            border: 1.5px solid #e2e8f0;
             margin-bottom: 18px;
             transition: 0.3s;
+            overflow: hidden;
+        }
+
+        .input-group.invalid-field {
+            border-color: var(--error);
+            background: #fff5f5;
         }
 
         .input-group:focus-within {
@@ -127,16 +135,25 @@
             font-size: 15px;
             font-weight: 500;
             color: #1e293b;
+            box-shadow: none !important;
         }
 
         .form-control::placeholder { color: #94a3b8; }
+
+        .password-toggle {
+            cursor: pointer;
+            padding-right: 18px;
+            color: #94a3b8;
+            transition: 0.2s;
+        }
+        .password-toggle:hover { color: var(--primary); }
 
         .alert-custom {
             background: #fee2e2;
             color: #b91c1c;
             border: none;
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             padding: 10px;
             text-align: center;
@@ -175,8 +192,6 @@
             text-decoration: none;
         }
 
-        .footer-links a:hover { text-decoration: underline; }
-
         .forgot-pass {
             display: block;
             text-align: right;
@@ -186,6 +201,12 @@
             color: var(--primary);
             font-weight: 600;
         }
+
+        /* Mobile adjustments */
+        @media (max-width: 480px) {
+            .login-card { padding: 25px 20px; }
+            .login-title { font-size: 22px; }
+        }
     </style>
 </head>
 
@@ -194,7 +215,7 @@
 <nav class="navbar navbar-expand-lg navbar-custom sticky-top animate__animated animate__fadeInDown">
     <div class="container">
         <a class="navbar-brand" href="${pageContext.request.contextPath}/">
-            <i class="fa-solid fa-bolt-lightning me-2"></i>SwapKart
+            <i class="fa-solid fa-bolt-lightning me-2 text-warning"></i>SwapKart
         </a>
         
         <div class="ms-auto">
@@ -210,12 +231,13 @@
         
         <div class="login-header">
             <div class="login-title">Welcome Back 👋</div>
-            <div class="login-subtitle">Please enter your details to sign in.</div>
+            <div class="login-subtitle">Sign in to continue swapping.</div>
         </div>
 
-        <!-- CLIENT-SIDE JAVASCRIPT ERROR BOX (NAYA ADD KIYA HAI) -->
-        <div id="jsError" class="alert alert-custom d-none animate__animated animate__shakeX mb-3"></div>
+        <!-- JS Error Box -->
+        <div id="jsError" class="alert alert-custom d-none animate__animated animate__headShake mb-3"></div>
 
+        <!-- Server Error Msg -->
         <c:if test="${not empty sessionScope.msg}">
             <div class="alert alert-custom animate__animated animate__shakeX mb-3">
                 <i class="fa-solid fa-circle-exclamation me-1"></i> ${sessionScope.msg}
@@ -225,24 +247,27 @@
 
         <form id="loginForm" method="post" action="${pageContext.request.contextPath}/doLogin">
             
-            <div class="input-group">
+            <div class="input-group" id="emailGroup">
                 <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
-                <input type="email" name="email" class="form-control" placeholder="Email Address" id="emailField">
+                <input type="email" name="email" class="form-control" placeholder="Email Address" id="emailField" autocomplete="email">
             </div>
 
-            <div class="input-group">
+            <div class="input-group" id="passGroup">
                 <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
                 <input type="password" name="password" class="form-control" placeholder="Password" id="passField">
+                <span class="input-group-text password-toggle" onclick="togglePassword()">
+                    <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                </span>
             </div>
 
             <a href="${pageContext.request.contextPath}/forgotPassword" class="forgot-pass text-decoration-none">Forgot Password?</a>
 
-            <button type="submit" class="btn btn-login">
-                Sign In <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
+            <button type="submit" class="btn btn-login shadow">
+                Sign In <i class="fa-solid fa-arrow-right-to-bracket ms-1"></i>
             </button>
 
             <div class="footer-links">
-                New to SwapKart? <a href="${pageContext.request.contextPath}/register">Create an account</a>
+                New here? <a href="${pageContext.request.contextPath}/register">Create Account</a>
             </div>
         </form>
     </div>
@@ -251,44 +276,74 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // VALIDATION LOGIC START
-    document.getElementById("loginForm").onsubmit = function(event) {
-        const email = document.getElementById("emailField").value.trim();
-        const password = document.getElementById("passField").value.trim();
-        const jsError = document.getElementById("jsError");
+    const loginForm = document.getElementById("loginForm");
+    const emailField = document.getElementById("emailField");
+    const passField = document.getElementById("passField");
+    const jsError = document.getElementById("jsError");
+    const emailGroup = document.getElementById("emailGroup");
+    const passGroup = document.getElementById("passGroup");
 
-        // Simple function to show error without breaking UI
-        function showError(msg) {
-            jsError.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i> ' + msg;
-            jsError.classList.remove("d-none");
-            event.preventDefault(); // Stop form submission
+    function showError(msg, group) {
+        jsError.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i> ' + msg;
+        jsError.classList.remove("d-none");
+        if(group) group.classList.add("invalid-field");
+    }
+
+    function resetErrors() {
+        jsError.classList.add("d-none");
+        emailGroup.classList.remove("invalid-field");
+        passGroup.classList.remove("invalid-field");
+    }
+
+    // Toggle Password Visibility
+    function togglePassword() {
+        const icon = document.getElementById("eyeIcon");
+        if (passField.type === "password") {
+            passField.type = "text";
+            icon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+            passField.type = "password";
+            icon.classList.replace("fa-eye-slash", "fa-eye");
         }
+    }
 
-        // Email check
-        if (email === "") {
-            showError("Enter Email..");
-            return false;
-        }
+    // Real-time cleanup as user types
+    [emailField, passField].forEach(field => {
+        field.addEventListener('input', resetErrors);
+    });
 
-        // Email format regex
+    // Form Submit Validation
+    loginForm.onsubmit = function(event) {
+        resetErrors();
+        const email = emailField.value.trim();
+        const password = passField.value.trim();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (email === "") {
+            showError("Please enter your email.", emailGroup);
+            event.preventDefault();
+            return false;
+        }
+
         if (!emailRegex.test(email)) {
-            showError("Enter Correct Email Address.");
+            showError("Please enter a valid email address.", emailGroup);
+            event.preventDefault();
             return false;
         }
 
-        // Password check
         if (password === "") {
-            showError("Enter Password... ");
+            showError("Password is required to sign in.", passGroup);
+            event.preventDefault();
             return false;
         }
 
-        if (password.length < 3) {
-            showError("Enter password more than 4 digit");
+        if (password.length < 4) {
+            showError("Security check: Password must be at least 4 digits.", passGroup);
+            event.preventDefault();
             return false;
         }
 
-        return true; // Sab sahi hai
+        return true;
     };
 </script>
 

@@ -5,13 +5,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- 1. ZAROORI: Mobile responsiveness ke liye meta tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11440/11440263.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11440/11440263.png">
     <title>Join SwapKart | Register</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
     <style>
         :root {
@@ -22,26 +25,26 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: #0f172a;
-            /* Wahi Cubes Pattern aur Dark Gradient */
             background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
                               url('https://www.transparenttextures.com/patterns/cubes.png');
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             color: #f8fafc;
+            overflow-x: hidden;
         }
 
-        /* --- SIMPLE NAVBAR (Sirf Logo aur Buy/Login) --- */
+        /* --- MODERN NAVBAR --- */
         .navbar-custom {
             background: rgba(15, 23, 42, 0.9) !important;
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 0;
+            padding: 12px 0;
         }
 
         .navbar-brand {
             font-weight: 800;
-            font-size: 24px;
+            font-size: clamp(1.2rem, 4vw, 1.5rem); /* Responsive Logo */
             background: linear-gradient(135deg, #6366f1, #a855f7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -51,37 +54,36 @@
         .nav-link-custom {
             color: #f8fafc !important;
             font-weight: 600;
-            margin-left: 25px;
+            margin-left: 15px;
+            font-size: 14px;
             text-decoration: none;
             transition: 0.3s;
         }
 
-        .nav-link-custom:hover {
-            color: var(--primary) !important;
-        }
+        .nav-link-custom:hover { color: var(--primary) !important; }
 
-        /* --- COMPACT GLASS REGISTER CARD --- */
+        /* --- COMPACT REGISTER CARD --- */
         .reg-container {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 30px 20px;
+            padding: 40px 15px; /* Spacing for mobile */
         }
 
         .reg-card {
             background: var(--glass);
             border-radius: 28px;
-            padding: 35px 40px;
+            padding: clamp(25px, 5vw, 40px); /* Padding scales with screen */
             width: 100%;
-            max-width: 410px; /* Compact Size */
+            max-width: 420px; 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .reg-title {
             font-weight: 800;
-            font-size: 26px;
+            font-size: clamp(1.5rem, 5vw, 1.7rem);
             color: #1e293b;
             text-align: center;
             margin-bottom: 25px;
@@ -91,8 +93,8 @@
         .input-group {
             background: #f1f5f9;
             border-radius: 14px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 15px;
+            border: 1.5px solid #e2e8f0;
+            margin-bottom: 18px;
             transition: 0.3s;
         }
 
@@ -112,12 +114,12 @@
         .form-control {
             background: transparent !important;
             border: none !important;
-            padding: 10px 15px;
-            font-size: 14.5px;
+            padding: 12px 15px;
+            font-size: 15px;
+            font-weight: 500;
             color: #1e293b;
         }
 
-        /* Button */
         .btn-reg {
             background: linear-gradient(135deg, #6366f1, #a855f7);
             color: white !important;
@@ -129,16 +131,17 @@
             width: 100%;
             margin-top: 10px;
             transition: 0.3s ease;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
         }
 
         .btn-reg:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
         }
 
         .footer-text {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
             font-size: 14px;
             color: #64748b;
         }
@@ -148,57 +151,77 @@
             font-weight: 700;
             text-decoration: none;
         }
+
+        .footer-text a:hover { text-decoration: underline; }
+
+        /* Dark Theme Support for specific text inside white card */
+        .dark-theme .reg-card { background: rgba(255, 255, 255, 0.98); }
     </style>
 </head>
-<body>
 
-<nav class="navbar-custom">
+<body class="${sessionScope.theme == 'dark' ? 'dark-theme' : ''}">
+
+<nav class="navbar-custom animate__animated animate__fadeInDown">
     <div class="container d-flex justify-content-between align-items-center">
-        <a href="${pageContext.request.contextPath}/" class="navbar-brand">SwapKart</a>
-        <div class="d-flex">
-            <a href="${pageContext.request.contextPath}/products" class="nav-link-custom">Buy</a>
+        <a href="${pageContext.request.contextPath}/" class="navbar-brand">
+            <i class="fa-solid fa-repeat me-1"></i>SwapKart
+        </a>
+        <div class="d-flex align-items-center">
+            <a href="${pageContext.request.contextPath}/products" class="nav-link-custom">Explore</a>
             <a href="${pageContext.request.contextPath}/login" class="nav-link-custom">Login</a>
         </div>
     </div>
 </nav>
 
 <div class="reg-container">
-    <div class="reg-card">
+    <div class="reg-card animate__animated animate__zoomIn">
         
         <div class="reg-title">Create Account</div>
 
+        <!-- Yahan par registration message dikha sakte hain agar backend se aaye -->
+        <c:if test="${not empty param.msg}">
+             <div class="alert alert-danger p-2 small text-center mb-3 rounded-3">${param.msg}</div>
+        </c:if>
+
         <form action="${pageContext.request.contextPath}/doRegister" method="post">
 
+            <!-- Full Name -->
             <div class="input-group">
                 <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
                 <input type="text" name="fullName" class="form-control" placeholder="Full Name" required>
             </div>
 
+            <!-- Email -->
             <div class="input-group">
                 <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
                 <input type="email" name="email" class="form-control" placeholder="Email Address" required>
             </div>
 
+            <!-- Mobile -->
             <div class="input-group">
                 <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
                 <input type="text" name="mobile" class="form-control" placeholder="Mobile Number" required>
             </div>
 
+            <!-- Password -->
             <div class="input-group">
                 <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
                 <input type="password" name="password" class="form-control" placeholder="Password" required>
             </div>
 
-            <button type="submit" class="btn btn-reg">Register Now</button>
+            <button type="submit" class="btn btn-reg">
+                Get Started <i class="fa-solid fa-arrow-right ms-1"></i>
+            </button>
 
             <div class="footer-text">
                 Already have an account? 
-                <a href="${pageContext.request.contextPath}/login">Login Here</a>
+                <a href="${pageContext.request.contextPath}/login">Sign In</a>
             </div>
 
         </form>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
