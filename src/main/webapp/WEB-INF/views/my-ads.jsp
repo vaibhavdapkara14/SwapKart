@@ -171,7 +171,7 @@
 
                                     <a class="action-btn delete-btn shadow-sm"
                                        href="${pageContext.request.contextPath}/deleteProduct?id=${p.id}"
-                                       onclick="return confirm('Bhai, pakka delete karna hai?')">
+                                       onclick="return confirm('Are You sure ? ')">
                                        <i class="fa-solid fa-trash-can"></i>
                                     </a>
                                 </div>

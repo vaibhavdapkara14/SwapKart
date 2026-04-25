@@ -14,7 +14,7 @@
         .details-container {
             width: 95%;
             max-width: 1200px;
-            margin: 20px auto;
+            margin: 40px auto;
         }
 
         .back-btn {
@@ -100,7 +100,7 @@
             margin-bottom: 12px; transition: 0.3s;
             box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3); border: none;
         }
-        .btn-main-cart:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4); }
+        .btn-main-cart:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4); }
 
         .btn-contact {
             display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -190,21 +190,32 @@
                     </div>
 
                     <c:choose>
+                        <%-- Logic 1: Item already Sold --%>
                         <c:when test="${p.status == 'Sold'}">
                             <div class="status-sold animate__animated animate__headShake">
                                 <i class="fa-solid fa-circle-xmark me-2"></i> ITEM UNAVAILABLE
                             </div>
                         </c:when>
+
+                        <%-- Logic 2: Logged-in user is the SELLER (Restriction) --%>
+                        <c:when test="${not empty sessionScope.user && sessionScope.user.fullName == p.sellerName}">
+                            <div class="alert alert-primary border-0 rounded-4 text-center py-3">
+                                <i class="fa-solid fa-user-check fa-2x mb-2 d-block"></i>
+                                <h6 class="fw-bold mb-0">It's Your Item !</h6>
+                                <small>Manage this ad from your 'My Ads' section.</small>
+                            </div>
+                        </c:when>
+
+                        <%-- Logic 3: Normal User/Buyer --%>
                         <c:otherwise>
                             <a href="${pageContext.request.contextPath}/addToCart?id=${p.id}" class="btn-main-cart">
                                 <i class="fa-solid fa-cart-shopping me-2"></i> ADD TO MY CART
                             </a>
+                            <a href="tel:${p.sellerContact}" class="btn-contact">
+                                <i class="fa-solid fa-phone me-2"></i> CONTACT SELLER
+                            </a>
                         </c:otherwise>
                     </c:choose>
-
-                    <a href="tel:${p.sellerContact}" class="btn-contact">
-                        <i class="fa-solid fa-phone me-2"></i> CONTACT SELLER
-                    </a>
                 </div>
 
                 <!-- Delivery Features -->
